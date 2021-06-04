@@ -53,9 +53,22 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
 Plug 'preservim/nerdtree'
+
+" LSP Stuff
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-lua/completion-nvim'
 call plug#end()
 
+" Need this for highlighting errors in red with LSP
+set termguicolors
+let g:gruvbox_contrast_dark = 'hard'
+if exists('+termguicolors')
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+let g:gruvbox_invert_selection='0'
 colorscheme gruvbox
+set background=dark
 
 " MAPPINGS
 " n for normal mode, no - nore recursive execution
@@ -72,7 +85,7 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 &&
     \ exists('b:NERDTree') && b:NERDTree.isTabTree() |
     \ quit | endif
 
-"nnoremap <leader>u :UndotreeShow<CR>
+" UndoTree
 nnoremap <leader>u :UndotreeToggle<CR>
 
 " Navvigating between splits
@@ -81,7 +94,6 @@ nnoremap <leader>j :wincmd j<CR>
 nnoremap <leader>k :wincmd k<CR>
 nnoremap <leader>l :wincmd l<CR>
 " Creating splits
-"nnoremap <C-l> <C-w>v:NERDTree<CR>
 nnoremap <C-l> <C-w>v<CR>
 nnoremap <C-j> <C-w>s<CR>
 
@@ -93,4 +105,14 @@ nnoremap <leader>O O<Esc>
 nnoremap <leader>ff :Telescope find_files<cr>
 nnoremap <leader>ps :lua require('telescope.builtin').
     \ grep_string({ search = vim.fn.input("Grep For > ")})<CR>
+
+" LSP Stuff
+lua require'lspconfig'.clangd.setup{on_attach=require'completion'.on_attach}
+" Use completion-nvim in every buffer
+autocmd BufEnter * lua require'completion'.on_attach()
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy', 'all']
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+" This will highlight issues in red
+lua require('vim.lsp.diagnostic')._define_default_signs_and_highlights()
 
