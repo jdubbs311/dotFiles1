@@ -108,11 +108,28 @@ nnoremap <leader>ps :lua require('telescope.builtin').
 
 " LSP Stuff
 lua require'lspconfig'.clangd.setup{on_attach=require'completion'.on_attach}
+lua require'lspconfig'.pyright.setup{on_attach=require'completion'.on_attach}
 " Use completion-nvim in every buffer
 autocmd BufEnter * lua require'completion'.on_attach()
-let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy', 'all']
-" Set completeopt to have a better completion experience
-set completeopt=menuone,noinsert,noselect
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
 " This will highlight issues in red
 lua require('vim.lsp.diagnostic')._define_default_signs_and_highlights()
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" Avoid showing message extra message when using completion
+set shortmess+=c
+" LSP Remaps
+nnoremap <leader>vd :lua vim.lsp.buf.definition()<CR>
+nnoremap <leader>vi :lua vim.lsp.buf.implementation()<CR>
+nnoremap <leader>vsh :lua vim.lsp.buf.signature_help()<CR>
+nnoremap <leader>vrr :lua vim.lsp.buf.references()<CR>
+nnoremap <leader>vrn :lua vim.lsp.buf.rename()<CR>
+nnoremap <leader>vh :lua vim.lsp.buf.hover()<CR>
+nnoremap <leader>vca :lua vim.lsp.buf.code_action()<CR>
+nnoremap <leader>vsd :lua vim.lsp.util.show_line_diagnostics(); vim.lsp.util.show_line_diagnostics()<CR>
+nnoremap <leader>vn :lua vim.lsp.diagnostic.goto_next()<CR>
+"nnoremap <leader>vll :call LspLocationList()<CR>   Not Found!
 
